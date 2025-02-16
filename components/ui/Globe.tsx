@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from 'three'
+import { Color } from 'three'
 import ThreeGlobe from 'three-globe'
-import { useThree, Canvas, extend } from '@react-three/fiber'
+import { Canvas, extend } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import countries from '@/data/globe.json'
 
@@ -16,8 +16,6 @@ declare module '@react-three/fiber' {
 extend({ ThreeGlobe })
 
 const RING_PROPAGATION_SPEED = 3
-const aspect = 1.2
-const cameraZ = 300
 
 type Position = {
   order: number
@@ -245,83 +243,37 @@ export function Globe({ globeConfig, data }: WorldProps) {
   }, [data, globeData])
 
   return (
-    <>
+    <Canvas>
+      <OrbitControls />
       <primitive object={new ThreeGlobe()} ref={globeRef} />
-    </>
-  )
-}
-
-export function WebGLRendererConfig() {
-  const { gl, size } = useThree()
-
-  useEffect(() => {
-    gl.setPixelRatio(window.devicePixelRatio)
-    gl.setSize(size.width, size.height)
-    gl.setClearColor(0xffaaff, 0)
-  }, [gl, size.width, size.height])
-
-  return null
-}
-
-export function World(props: WorldProps) {
-  const { globeConfig } = props
-  const scene = new Scene()
-  scene.fog = new Fog(0xffffff, 400, 2000)
-
-  return (
-    <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
-      <WebGLRendererConfig />
-      <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
-      <directionalLight
-        color={globeConfig.directionalLeftLight}
-        position={new Vector3(-400, 100, 400)}
-      />
-      <directionalLight
-        color={globeConfig.directionalTopLight}
-        position={new Vector3(-200, 500, 200)}
-      />
-      <pointLight
-        color={globeConfig.pointLight}
-        position={new Vector3(-200, 500, 200)}
-        intensity={0.8}
-      />
-      <Globe {...props} />
-      <OrbitControls
-        enablePan={false}
-        enableZoom={false}
-        minDistance={cameraZ}
-        maxDistance={cameraZ}
-        autoRotateSpeed={1}
-        autoRotate={true}
-        minPolarAngle={Math.PI / 3.5}
-        maxPolarAngle={Math.PI - Math.PI / 3}
-      />
     </Canvas>
   )
 }
 
-export function hexToRgb(hex: string) {
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
-  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-    return r + r + g + g + b + b
-  })
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null
+// ฟังก์ชันที่ขาดไป
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#([0-9a-f]{6}|[0-9a-f]{3})$/i.exec(hex)
+  if (!result) return null
+  let r: number, g: number, b: number
+  if (result[1].length === 4) {
+    r = parseInt(result[1][1] + result[1][1], 16)
+    g = parseInt(result[1][2] + result[1][2], 16)
+    b = parseInt(result[1][3] + result[1][3], 16)
+  } else {
+    r = parseInt(result[1].substr(0, 2), 16)
+    g = parseInt(result[1].substr(2, 2), 16)
+    b = parseInt(result[1].substr(4, 2), 16)
+  }
+  return { r, g, b }
 }
 
-export function genRandomNumbers(min: number, max: number, count: number) {
-  const arr = []
-  while (arr.length < count) {
-    const r = Math.floor(Math.random() * (max - min)) + min
-    if (arr.indexOf(r) === -1) arr.push(r)
+function genRandomNumbers(min: number, max: number, count: number): number[] {
+  const numbers: number[] = [] // กำหนดประเภทให้ชัดเจน
+  while (numbers.length < count) {
+    const num = Math.floor(Math.random() * (max - min + 1)) + min
+    if (!numbers.includes(num)) {
+      numbers.push(num)
+    }
   }
-
-  return arr
+  return numbers
 }
