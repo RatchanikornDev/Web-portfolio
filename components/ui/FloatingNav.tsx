@@ -9,10 +9,11 @@ import {
 import { cn } from '../lib/utils'
 import Link from 'next/link'
 
+
 interface NavItem {
   name: string
   link: string
-  icon?: JSX.Element
+  icon?: React.ReactNode
 }
 
 export const FloatingNav = ({
