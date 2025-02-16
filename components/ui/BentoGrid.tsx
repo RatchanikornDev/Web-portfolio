@@ -80,7 +80,7 @@ export const BentoGridItem = ({
       <div className={`${id === 6 && 'flex justify-center'} h-full`}>
         <div className="w-full h-full absolute">
           {img && (
-            <img
+            <image
               src={img}
               alt={img}
               className={cn(imgClassName, 'object-cover object-center ')}
@@ -93,7 +93,7 @@ export const BentoGridItem = ({
           } `}
         >
           {spareImg && (
-            <img
+            <image
               src={spareImg}
               alt={spareImg}
               //   width={220}
@@ -170,7 +170,7 @@ export const BentoGridItem = ({
                   copied ? 'block' : 'block'
                 }`}
               >
-                {/* <img src="/confetti.gif" alt="confetti" /> */}
+                {/* <image src="/confetti.gif" alt="confetti" /> */}
                 <Lottie
                   loop={copied}
                   autoplay={copied}
